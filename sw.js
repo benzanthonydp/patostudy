@@ -11,7 +11,7 @@
    - slide pictures (slides/<deck>/<n>.webp, t<n>.webp): cache first; a picture not seen yet is fetched, and kept only when the
      answer is 200. The set is finite (about 70 MB for all decks), so the cache cannot grow past that. */
 const PREFIX = "patostudy-";
-const SHELL = "patostudy-6.4-62a812a42e";
+const SHELL = "patostudy-6.5-189bc015c2";
 const SLIDES = "patostudy-slides-88bb1daa6c";
 const FILES = ["./", "./index.html", "./manifest.webmanifest", "./apple-touch-icon.png", "./icon-192.png", "./icon-512.png"];
 const SLIDE_PATH = new URL("slides/", self.registration.scope).pathname;
@@ -57,7 +57,12 @@ self.addEventListener("fetch", e => {
     caches.open(SHELL).then(c =>
       c.match(r, { ignoreSearch: true }).then(hit => {
         if (hit) return hit;
-        return fetch(r).catch(() => (r.mode === "navigate" ? c.match("./index.html") : Response.error()));
+        /* 6.5: the ECG strips (ecg-hd/, ecg-trace/, about 3 MB) are kept in the shell cache the first time they load, so they work offline */
+        const ecg = /\/ecg-(hd|trace)\//.test(u.pathname);
+        return fetch(r).then(res => {
+          if (ecg && res && res.status === 200) c.put(r, res.clone());
+          return res;
+        }).catch(() => (r.mode === "navigate" ? c.match("./index.html") : Response.error()));
       })
     )
   );

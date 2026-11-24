@@ -11,7 +11,7 @@
    - slide pictures (slides/<deck>/<n>.webp, t<n>.webp): cache first; a picture not seen yet is fetched, and kept only when the
      answer is 200. The set is finite (about 70 MB for all decks), so the cache cannot grow past that. */
 const PREFIX = "patostudy-";
-const SHELL = "patostudy-6.5-189bc015c2";
+const SHELL = "patostudy-6.6-c78ec76bfc";
 const SLIDES = "patostudy-slides-88bb1daa6c";
 const FILES = ["./", "./index.html", "./manifest.webmanifest", "./apple-touch-icon.png", "./icon-192.png", "./icon-512.png"];
 const SLIDE_PATH = new URL("slides/", self.registration.scope).pathname;
